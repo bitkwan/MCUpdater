@@ -92,7 +92,7 @@ else:
     tmp_filename = tempfile.mktemp(".zip")
 
     threading.Thread(target=dl("http://uuz.cat/"+packge_name,tmp_filename), args=('')).start()
-    program_pwd="C:/Users/"+getpass.getuser()+"/AppData/Roaming/mcupdater/"
+    program_pwd=os.environ['APPDATA']+"\\mcupdater\\"
     if os.path.exists(program_pwd)==False:
         os.mkdir(program_pwd)
     unzip(tmp_filename,program_pwd)
