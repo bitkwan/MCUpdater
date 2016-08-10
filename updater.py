@@ -5,6 +5,11 @@ import urllib.request
 import sys
 import threading
 import getpass
+import config
+import hashlib
+import json
+import requests
+
 pwd = os.getcwd()
 def readFile(file):
     f = open(file)
@@ -53,11 +58,19 @@ def unzip(source_zip,target_dir):
     cmd=program_pwd+'7z.exe x \"'+source_zip+'" -y -aos -o\"'+target_dir+'\"'
     os.system(cmd)
 
+def md5sum(file_name):
+    fp = open(file_name, 'rb')
+    content = fp.read()
+    fp.close()
+    m = hashlib.md5(content)
+    file_md5 = m.hexdigest()
+    return file_md5
+
 print("")
 print("正在检查环境...")
 
 FileList = []
-rootdir = "\\"
+rootdir = os.environ['APPDATA']+"\\mcupdater\\"
 
 for root, subFolders, files in os.walk(rootdir):
     if 'done' in subFolders:
@@ -68,8 +81,9 @@ for root, subFolders, files in os.walk(rootdir):
 
 
 if FileList:
-    shell = readFile("shell.bat")
+    shell = readFile(config.BAT_PATH)
     rpe_shell = shell.replace("{dir}", pwd)
+    rpe_shell = rpe_shell.replace("{java}", FileList[0])
 
     tmp_filename = tempfile.mktemp(".bat")
     open(tmp_filename, "w").close()
@@ -78,9 +92,31 @@ if FileList:
     file_object = open(tmp_filename, 'w')
     file_object.write(rpe_shell)
     file_object.close()
+
+    ModList = []
+    rootdir = config.MC_DIR+"mods/"
+
+    for root, subFolders, files in os.walk(rootdir):
+        if 'done' in subFolders:
+            subFolders.remove('done')
+        for f in files:
+            if f.find('.jar') != -1:
+                filepath=os.path.join(root, f)
+                ModList.append({md5sum(os.path.join(root, f)):filepath.replace(rootdir, "")})
+            if f.find('.zip') != -1:
+                filepath=os.path.join(root, f)
+                ModList.append({md5sum(os.path.join(root, f)):filepath.replace(rootdir, "")})
+            if f.find('.litemod') != -1:
+                filepath=os.path.join(root, f)
+                ModList.append({md5sum(os.path.join(root, f)):filepath.replace(rootdir, "")})
+
+    #print(json.dumps(ModList, sort_keys=True, indent=4))
+    _json = json.dumps(ModList, sort_keys=True, indent=4)
+    r = requests.post(config.API_URL,data=_json)
+    #print(r.text)
 else:
     print("")
-    print("x 系统检测到系统盘中没有安装Java")
+    print("x 系统检测到没有安装Java")
     bit=platform.machine()
     if bit=="AMD64":
         packge_name = "j8x64.zip"
@@ -96,3 +132,5 @@ else:
     if os.path.exists(program_pwd)==False:
         os.mkdir(program_pwd)
     unzip(tmp_filename,program_pwd)
+    print("")
+    print("O Java环境已经安装完成,请重启本程序")
