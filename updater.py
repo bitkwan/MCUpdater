@@ -1,6 +1,12 @@
 import os,tempfile,platform,urllib.request,sys,threading,getpass,config,hashlib,json,requests,random,string
 
 pwd = os.getcwd()
+r = requests.get(config.TEST_URL)
+if r.status_code!=204:
+    print("很抱歉，网络连接不正常。")
+    input()
+    sys.exit()
+
 def readFile(file):
     f = open(file)
     line = f.readline()
@@ -196,30 +202,16 @@ if FileList:
     file_object.close()
 
     ModList = []
-    rootdir = config.MC_DIR+"mods/"
     localList = []
-    for root, subFolders, files in os.walk(rootdir):
-        if 'done' in subFolders:
-            subFolders.remove('done')
-        for f in files:
-            if f.find('.jar') != -1:
-                filepath=os.path.join(root, f)
-                md5=md5sum(os.path.join(root, f))
-                filename=filepath.replace(rootdir, "")
-                ModList.append({0:md5,1:filename})
-                localList.append({md5:filename})
-            if f.find('.zip') != -1:
-                filepath=os.path.join(root, f)
-                md5=md5sum(os.path.join(root, f))
-                filename=filepath.replace(rootdir, "")
-                ModList.append({0:md5,1:filename})
-                localList.append({md5:filename})
-            if f.find('.litemod') != -1:
-                filepath=os.path.join(root, f)
-                md5=md5sum(os.path.join(root, f))
-                filename=filepath.replace(rootdir, "")
-                ModList.append({0:md5,1:filename})
-                localList.append({md5:filename})
+    rootdir = config.MC_DIR+"mods/"
+
+    for name in os.listdir(rootdir):
+        if name.endswith('.jar') or name.endswith('.zip') or name.endswith('.litemod'):
+            filepath=rootdir+name
+            md5=md5sum(filepath)
+            ModList.append({0:md5,1:name})
+            localList.append({md5:name})
+
 
     #print(json.dumps(localList, sort_keys=True, indent=4))
     _json = json.dumps(ModList, sort_keys=True, indent=4)
@@ -251,16 +243,15 @@ if FileList:
                 print(filename+" => Done")
         if data["down"]:
             print("")
-            print("正在下载更新")
             num=0
-            for dl in data["down"]:
+            for dls in data["down"]:
                 save_name=random_str(32)
-                save_name=save_name+"."+dl[0]
+                save_name=save_name+"."+dls[0]
                 num=num+1
                 total=data["down_total"]
-                dl_url=dl[1]
+                dl_url=dls[1]
                 print("正在下载 (" + str(num) + "/" + str(total) + ")")
-                save_path=pwd+config.MC_DIR+"mods/"+save_name
+                save_path=pwd+"/"+config.MC_DIR+"mods/"+save_name
                 threading.Thread(target=dl(dl_url, save_path), args=('')).start()
         start(tmp_filename)
     else:
