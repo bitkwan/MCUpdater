@@ -1,14 +1,4 @@
-import os
-import tempfile
-import platform
-import urllib.request
-import sys
-import threading
-import getpass
-import config
-import hashlib
-import json
-import requests
+import os,tempfile,platform,urllib.request,sys,threading,getpass,config,hashlib,json,requests,random,string
 
 pwd = os.getcwd()
 def readFile(file):
@@ -66,6 +56,100 @@ def md5sum(file_name):
     file_md5 = m.hexdigest()
     return file_md5
 
+
+def deep_search(needles, haystack):
+    found = {}
+    if type(needles) != type([]):
+        needles = [needles]
+
+    if type(haystack) == type(dict()):
+        for needle in needles:
+            if needle in haystack.keys():
+                found[needle] = haystack[needle]
+            elif len(haystack.keys()) > 0:
+                for key in haystack.keys():
+                    result = deep_search(needle, haystack[key])
+                    if result:
+                        for k, v in result.items():
+                            found[k] = v
+    elif type(haystack) == type([]):
+        for node in haystack:
+            result = deep_search(needles, node)
+            if result:
+                for k, v in result.items():
+                    found[k] = v
+    return found
+
+def random_str(randomlength=8):
+    a = list(string.ascii_letters)
+    random.shuffle(a)
+    return ''.join(a[:randomlength])
+
+def init():
+    if os.path.isfile(pwd + "\\config\\maxram.cfg"):
+        os.remove("config\\maxram.cfg")
+    print("")
+    print("请输入数字选择内存大小:")
+    print("")
+    print("单位为M，范围512-4096，例如: 512")
+    print("")
+    maxram = input("设置: ")
+    if int(maxram)<512:
+        print("输入不正确.")
+        init()
+    elif int(maxram)>4096:
+        print("输入不正确.")
+        init()
+    else:
+        file_object = open("config\\maxram.cfg", 'w')
+        file_object.write(maxram)
+        file_object.close()
+
+def user():
+    if os.path.isfile(pwd + "\\config\\username.cfg"):
+        os.remove("config\\username.cfg")
+    user=input("设置昵称: ")
+    if user==False:
+        print("选择不正确.")
+        user()
+    else:
+        file_object = open("config\\username.cfg", 'w')
+        file_object.write(user)
+        file_object.close()
+
+
+def start(path):
+    print("")
+    print("按数字选择:")
+    print("")
+    print("[0] 启动游戏")
+    print("[1] 重新设置昵称")
+    print("[2] 重新设置内存")
+    print("")
+    choose=input("选择=> ")
+
+    if int(choose)==0:
+        print("")
+        print("正在启动游戏...")
+        print("=> 游戏中...")
+        print(path)
+        os.system(path)
+        print("")
+        print("=> 再会")
+    elif int(choose)==1:
+        user()
+        print("")
+        print("=> 设置成功")
+        start(path)
+    elif int(choose)==2:
+        init()
+        print("")
+        print("=> 设置成功")
+        start(path)
+    else:
+        print("x 错误，请重新选择")
+        start(path)
+
 print("")
 print("正在检查环境...")
 
@@ -76,44 +160,113 @@ for root, subFolders, files in os.walk(rootdir):
     if 'done' in subFolders:
         subFolders.remove('done')
     for f in files:
-        if f.find('java.exe') != -1:
+        if f.find('javaw.exe') != -1:
             FileList.append(os.path.join(root, f))
 
 
 if FileList:
+    if os.path.exists("config/") == False:
+        os.mkdir(pwd+"\\config\\")
+    if os.path.isfile(pwd + "/config/maxram.cfg") == False:
+        init()
+        print("")
+        print("=> 设置成功")
+    if os.path.isfile(pwd + "/config/username.cfg") == False:
+        user()
+        print("")
+        print("=> 设置成功")
     shell = readFile(config.BAT_PATH)
+    maxram = readFile("config\\maxram.cfg")
+    username = readFile("config\\username.cfg")
+
     rpe_shell = shell.replace("{dir}", pwd)
     rpe_shell = rpe_shell.replace("{java}", FileList[0])
+    rpe_shell = rpe_shell.replace("{maxram}", maxram)
+    rpe_shell = rpe_shell.replace("{username}", username)
 
     tmp_filename = tempfile.mktemp(".bat")
     open(tmp_filename, "w").close()
-    print(tmp_filename)
+    #print(tmp_filename)
 
     file_object = open(tmp_filename, 'w')
+    file_object.write("@echo off\n")
+    file_object.write("set appdata=" + pwd + "\.minecraft\n")
+    file_object.write("cd /D %appdata%\n")
     file_object.write(rpe_shell)
     file_object.close()
 
     ModList = []
     rootdir = config.MC_DIR+"mods/"
-
+    localList = []
     for root, subFolders, files in os.walk(rootdir):
         if 'done' in subFolders:
             subFolders.remove('done')
         for f in files:
             if f.find('.jar') != -1:
                 filepath=os.path.join(root, f)
-                ModList.append({md5sum(os.path.join(root, f)):filepath.replace(rootdir, "")})
+                md5=md5sum(os.path.join(root, f))
+                filename=filepath.replace(rootdir, "")
+                ModList.append({0:md5,1:filename})
+                localList.append({md5:filename})
             if f.find('.zip') != -1:
                 filepath=os.path.join(root, f)
-                ModList.append({md5sum(os.path.join(root, f)):filepath.replace(rootdir, "")})
+                md5=md5sum(os.path.join(root, f))
+                filename=filepath.replace(rootdir, "")
+                ModList.append({0:md5,1:filename})
+                localList.append({md5:filename})
             if f.find('.litemod') != -1:
                 filepath=os.path.join(root, f)
-                ModList.append({md5sum(os.path.join(root, f)):filepath.replace(rootdir, "")})
+                md5=md5sum(os.path.join(root, f))
+                filename=filepath.replace(rootdir, "")
+                ModList.append({0:md5,1:filename})
+                localList.append({md5:filename})
 
-    #print(json.dumps(ModList, sort_keys=True, indent=4))
+    #print(json.dumps(localList, sort_keys=True, indent=4))
     _json = json.dumps(ModList, sort_keys=True, indent=4)
     r = requests.post(config.API_URL,data=_json)
-    #print(r.text)
+    _output = r.text
+    data = json.loads(_output)
+
+    if data["update"]==-1:
+        print("")
+        print("x 服务器没有接受您的数据，请联系管理员")
+        input()
+        sys.exit()
+    elif data["update"]==-2:
+        print("")
+        print("x 服务器授权不匹配，请联系管理员")
+        input()
+        sys.exit()
+    elif data["update"] == 1:
+        print("")
+        print("o 正在进行更新")
+        if data["del"]:
+            print("")
+            print("我们需要删除一些文件")
+            for del_md5 in data["del"]:
+                md5=del_md5
+                result = deep_search(del_md5, localList)
+                filename = result[md5]
+                os.remove(config.MC_DIR+"mods/"+filename)
+                print(filename+" => Done")
+        if data["down"]:
+            print("")
+            print("正在下载更新")
+            num=0
+            for dl in data["down"]:
+                save_name=random_str(32)
+                save_name=save_name+"."+dl[0]
+                num=num+1
+                total=data["down_total"]
+                dl_url=dl[1]
+                print("正在下载 (" + str(num) + "/" + str(total) + ")")
+                save_path=pwd+config.MC_DIR+"mods/"+save_name
+                threading.Thread(target=dl(dl_url, save_path), args=('')).start()
+        start(tmp_filename)
+    else:
+        print("")
+        print("=> 已经是最新版本")
+        start(tmp_filename)
 else:
     print("")
     print("x 系统检测到没有安装Java")
@@ -134,3 +287,5 @@ else:
     unzip(tmp_filename,program_pwd)
     print("")
     print("O Java环境已经安装完成,请重启本程序")
+    input()
+    sys.exit()
