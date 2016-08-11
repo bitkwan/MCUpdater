@@ -7,7 +7,7 @@ https://github.com/bitkwan/mcupdater-server
 
 # TODO List
 - Fix mods download call error
-- generate.py for make .exe 
+- generate.py to make it be .exe
 
 # Changelog
 Pre-Alpha (20160811)
