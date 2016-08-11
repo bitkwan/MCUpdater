@@ -6,10 +6,13 @@ Updater for Minecraft Forge client.
 https://github.com/bitkwan/mcupdater-server
 
 # TODO List
-- Fix mods download call error
 - generate.py to make it be .exe
 
 # Changelog
+v1.0 (20160812)
+- Fix mods download call error
+- Added network test
+
 Pre-Alpha (20160811)
 - Mods check (update&delete)
 - Basic menu
