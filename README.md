@@ -24,7 +24,7 @@ https://github.com/bitkwan/mcupdater-server
 > python generate.py py2exe
 
 # Wiki
-[Custom](https://github.com/bitkwan/mcupdater/wiki/Custom)
+- [Custom](https://github.com/bitkwan/mcupdater/wiki/Custom)
 
 
 # Changelog
