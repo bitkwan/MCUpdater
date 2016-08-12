@@ -9,8 +9,7 @@ https://github.com/bitkwan/mcupdater-server
 - None
 
 # Developer's Requirement
-- Python 3+
-	> Py2exe available for your Python version
+- Python 3+ & Py2exe available
 - Python Requests
 
 # Player's Requirement
