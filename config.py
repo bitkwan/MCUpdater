@@ -2,7 +2,6 @@
 MC_DIR=".minecraft/"
 SERVER_URL="http://127.0.0.1/mcupdater-server/api.php"
 SERVER_TOKEN="0bd755c803470f092dca14e1d196dd38c5330fb4"
-DL_URL="http://127.0.0.1/mcupdater-server/mods/"
 TEST_URL="http://google.cn/generate_204"
 NAME="MCUpdater"
 VER="v1.1"
