@@ -1,9 +1,19 @@
+# -*- coding: utf-8 -*-
 import os,tempfile,platform,urllib.request,sys,threading,getpass,config,hashlib,json,requests,random,string
 
+os.system("@title "+config.NAME+" "+config.VER)
 pwd = os.getcwd()
 r = requests.get(config.TEST_URL)
 if r.status_code!=204:
     print("很抱歉，网络连接不正常。")
+    input()
+    sys.exit()
+elif os.path.exists(config.MC_DIR)==False:
+    print("很抱歉，无法检测到"+config.MC_DIR+"文件夹。")
+    input()
+    sys.exit()
+elif os.path.exists(config.MC_DIR+"mods/")==False:
+    print("很抱歉，无法检测到Mod文件夹。")
     input()
     sys.exit()
 
@@ -138,7 +148,7 @@ def start(path):
         print("")
         print("正在启动游戏...")
         print("=> 游戏中...")
-        print(path)
+        #print(path)
         os.system(path)
         print("")
         print("=> 再会")
@@ -181,7 +191,7 @@ if FileList:
         user()
         print("")
         print("=> 设置成功")
-    shell = readFile(config.BAT_PATH)
+    shell = config.BAT
     maxram = readFile("config\\maxram.cfg")
     username = readFile("config\\username.cfg")
 
