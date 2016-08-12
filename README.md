@@ -10,7 +10,7 @@ https://github.com/bitkwan/mcupdater-server
 
 # Developer's Requirement
 - Python 3+
-- Py2exe available for your Python version
+	> Py2exe available for your Python version
 - Python Requests
 
 # Player's Requirement
@@ -21,7 +21,7 @@ https://github.com/bitkwan/mcupdater-server
 	- [vcredist_x86.exe](http://www.microsoft.com/downloads/details.aspx?familyid=32bc1bee-a3f9-4c13-9c99-220b62a191ee&displaylang=en)
 
 # Generate .EXE file
-> python generate.py py2exe
+`python generate.py py2exe`
 
 # Wiki
 - [Custom](https://github.com/bitkwan/mcupdater/wiki/Custom)
