@@ -24,7 +24,6 @@ https://github.com/bitkwan/mcupdater-server
 
 # Wiki
 - [Custom](https://github.com/bitkwan/mcupdater/wiki/Custom)
-- [README(Chinese)](http://www.mcbbs.net/forum.php?mod=viewthread&tid=619505)
 
 # Changelog
 v1.1 (20160812)
