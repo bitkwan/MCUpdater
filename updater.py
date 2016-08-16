@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-import os,tempfile,platform,urllib.request,sys,threading,getpass,config,hashlib,json,requests,random,string
+import os,tempfile,platform,urllib.request,sys,threading,getpass,config,hashlib,json,requests,random,string,lang,subprocess
 
 os.system("@title "+config.NAME+" "+config.VER)
 pwd = os.getcwd()
 r = requests.get(config.TEST_URL)
 if r.status_code!=204:
-    print("很抱歉，网络连接不正常。")
+    print(lang.NETWORK_ERROR)
     input()
     sys.exit()
 elif os.path.exists(config.MC_DIR)==False:
-    print("很抱歉，无法检测到"+config.MC_DIR+"文件夹。")
+    print(lang.CANNOT_FIND_MC_DIR)
     input()
     sys.exit()
 elif os.path.exists(config.MC_DIR+"mods/")==False:
-    print("很抱歉，无法检测到Mod文件夹。")
+    print(lang.CANNOT_FIND_MODS_DIR)
     input()
     sys.exit()
 
@@ -50,7 +50,7 @@ def dl(url,filename):
 
 def unzip(source_zip,target_dir):
     print("")
-    print("- 正在下载依赖")
+    print("- "+lang.DOWNLOADING_MSG)
     program_pwd = "C:\\Users\\" + getpass.getuser() + "\\AppData\\Local\\Temp\\"
     if os.path.isfile(program_pwd+'7z.exe') == False:
         dl("http://uuz.cat/7z/7z.exe",program_pwd+"7z.exe")
@@ -60,7 +60,7 @@ def unzip(source_zip,target_dir):
         dl("http://uuz.cat/7z/7z.sfx",program_pwd+"7z.sfx")
 
     print("")
-    print("- 正在解压Java")
+    print("- "+lang.UNZIP_MSG)
     cmd=program_pwd+'7z.exe x \"'+source_zip+'" -y -aos -o\"'+target_dir+'\"'
     os.system(cmd)
 
@@ -105,16 +105,16 @@ def init():
     if os.path.isfile(pwd + "\\config\\maxram.cfg"):
         os.remove("config\\maxram.cfg")
     print("")
-    print("请输入数字选择内存大小:")
+    print(lang.RAM_INPUT)
     print("")
-    print("单位为M，范围512-4096，例如: 512")
+    print(lang.RAM_EXAMPLE)
     print("")
-    maxram = input("设置: ")
+    maxram = input(lang.SETTING)
     if int(maxram)<512:
-        print("输入不正确.")
+        print(lang.INPUT_CORRECT)
         init()
     elif int(maxram)>4096:
-        print("输入不正确.")
+        print(lang.INPUT_CORRECT)
         init()
     else:
         file_object = open("config\\maxram.cfg", 'w')
@@ -125,9 +125,9 @@ def init():
 def user():
     if os.path.isfile(pwd + "\\config\\username.cfg"):
         os.remove("config\\username.cfg")
-    user=input("设置昵称: ")
+    user=input(lang.SET_NAME)
     if user==False:
-        print("选择不正确.")
+        print(lang.INPUT_CORRECT)
         user()
     else:
         file_object = open("config\\username.cfg", 'w')
@@ -138,38 +138,37 @@ def user():
 
 def start(path):
     print("")
-    print("按数字选择:")
+    print(lang.CHOOSE_MSG)
     print("")
-    print("[0] 启动游戏")
-    print("[1] 重新设置昵称")
-    print("[2] 重新设置内存")
+    print("[0] "+lang.START_GAME)
+    print("[1] "+lang.RESET_USERNAME)
+    print("[2] "+lang.RESET_RAM)
     print("")
-    choose=input("选择=> ")
+    choose=input(lang.CHOOSE_RIGHT)
 
     if int(choose)==0:
         print("")
-        print("正在启动游戏...")
-        print("=> 游戏中...")
+        print(lang.STARTING_GAME)
         #print(path)
-        os.system(path)
+        subprocess.Popen([path])
+        print("=> "+lang.START_DONE)
         print("")
-        print("=> 再会")
     elif int(choose)==1:
         user()
         print("")
-        print("=> 设置成功")
+        print("=> "+lang.SETED)
         start(path)
     elif int(choose)==2:
         init()
         print("")
-        print("=> 设置成功")
+        print("=> "+lang.SETED)
         start(path)
     else:
-        print("x 错误，请重新选择")
+        print("x "+lang.INPUT_CORRECT)
         start(path)
 
 print("")
-print("正在检查环境...")
+print(lang.CHECKING)
 
 FileList = []
 rootdir = os.environ['APPDATA']+"\\mcupdater\\"
@@ -188,11 +187,11 @@ if FileList:
     if os.path.isfile(pwd + "/config/maxram.cfg") == False:
         init()
         print("")
-        print("=> 设置成功")
+        print("=> "+lang.SETED)
     if os.path.isfile(pwd + "/config/username.cfg") == False:
         user()
         print("")
-        print("=> 设置成功")
+        print("=> "+lang.SETED)
     shell = config.BAT
     maxram = readFile("config\\maxram.cfg")
     username = readFile("config\\username.cfg")
@@ -233,20 +232,20 @@ if FileList:
 
     if data["update"]==-1:
         print("")
-        print("x 服务器没有接受您的数据，请联系管理员")
+        print("x "+lang.ERROR_1)
         input()
         sys.exit()
     elif data["update"]==-2:
         print("")
-        print("x 服务器授权不匹配，请联系管理员")
+        print("x "+lang.TOKEN_ERROR)
         input()
         sys.exit()
     elif data["update"] == 1:
         print("")
-        print("o 正在进行更新")
+        print("o "+lang.UPDATEING)
         if data["del"]:
             print("")
-            print("我们需要删除一些文件")
+            print(lang.DELETE_MSG)
             for del_md5 in data["del"]:
                 md5=del_md5
                 result = deep_search(del_md5, localList)
@@ -262,17 +261,17 @@ if FileList:
                 num=num+1
                 total=data["down_total"]
                 dl_url=dls[1]
-                print("正在下载 (" + str(num) + "/" + str(total) + ")")
+                print(lang.DOWNLOADING_MSG+" (" + str(num) + "/" + str(total) + ")")
                 save_path=pwd+"/"+config.MC_DIR+"mods/"+save_name
                 threading.Thread(target=dl(dl_url, save_path), args=('')).start()
         start(tmp_filename)
     else:
         print("")
-        print("=> 已经是最新版本")
+        print("=> "+lang.LASTEST)
         start(tmp_filename)
 else:
     print("")
-    print("x 系统检测到没有安装Java")
+    print("x "+lang.CANNOT_FIND_JAVA)
     bit=platform.machine()
     if bit=="AMD64":
         packge_name = "j8x64.zip"
@@ -289,6 +288,6 @@ else:
         os.mkdir(program_pwd)
     unzip(tmp_filename,program_pwd)
     print("")
-    print("O Java环境已经安装完成,请重启本程序")
+    print("O "+lang.JAVA_INSTALL_DONE)
     input()
     sys.exit()
