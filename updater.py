@@ -120,6 +120,7 @@ def init():
         file_object = open("config\\maxram.cfg", 'w')
         file_object.write(maxram)
         file_object.close()
+        maxram = maxram
 
 def user():
     if os.path.isfile(pwd + "\\config\\username.cfg"):
@@ -132,6 +133,7 @@ def user():
         file_object = open("config\\username.cfg", 'w')
         file_object.write(user)
         file_object.close()
+        username = user
 
 
 def start(path):
