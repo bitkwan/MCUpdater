@@ -26,7 +26,5 @@ https://github.com/bitkwan/mcupdater-server
 - [Custom](https://github.com/bitkwan/mcupdater/wiki/Custom)
 
 # Changelog
-v1.1 (20160812)
-- Added minecraft exist check
-- Added title&version output
-- Updated generate.py
+v1.1.1 (20160816)
+- Fix change username&maxram must restart for apply
