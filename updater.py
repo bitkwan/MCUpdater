@@ -231,7 +231,7 @@ if FileList:
     }
     r = requests.post(config.API_URL , headers=headers , data=_json)
     _output = r.text
-    print(_output)
+    #print(_output)
     data = json.loads(_output)
     if data["update"]==-1:
         print("")
