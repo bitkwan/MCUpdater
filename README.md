@@ -27,5 +27,8 @@ https://github.com/bitkwan/mcupdater-server
 - [Custom](https://github.com/bitkwan/mcupdater/wiki/Custom)
 
 # Changelog
+v1.2.2 (20160824)
+- Fix bug
+
 v1.2.1 (20160824)
 - Support User-Agent
