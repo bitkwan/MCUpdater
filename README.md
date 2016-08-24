@@ -6,7 +6,8 @@ Updater for Minecraft Forge client.
 https://github.com/bitkwan/mcupdater-server
 
 # TODO List
-- None
+- Fix empty data bug
+- Custom for User-Agent
 
 # Developer's Requirement
 - Python 3+ & Py2exe available
