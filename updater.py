@@ -226,10 +226,13 @@ if FileList:
 
     #print(json.dumps(localList, sort_keys=True, indent=4))
     _json = json.dumps(ModList, sort_keys=True, indent=4)
-    r = requests.post(config.API_URL,data=_json)
+    headers = {
+        'User-Agent': config.UA
+    }
+    r = requests.post(config.API_URL , headers=headers , data=_json)
     _output = r.text
+    print(_output)
     data = json.loads(_output)
-
     if data["update"]==-1:
         print("")
         print("x "+lang.ERROR_1)
