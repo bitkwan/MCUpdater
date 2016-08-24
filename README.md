@@ -27,6 +27,5 @@ https://github.com/bitkwan/mcupdater-server
 - [Custom](https://github.com/bitkwan/mcupdater/wiki/Custom)
 
 # Changelog
-v1.2 (20160816)
-- Add language file
-- Updater auto close after launch
+v1.2.1 (20160824)
+- Support User-Agent
